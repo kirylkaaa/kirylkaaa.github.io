@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Футболки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .card {
+            border: 2px solid #001f54;
+            border-radius: 10px;
+            width: 220px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+        }
+        .card-content {
+            padding: 15px;
+            text-align: center;
+        }
+        .card-content h3 {
+            margin: 10px 0;
+            font-size: 1.2em;
+            color: #001f54;
+        }
+        .card-content p {
+            color: #666;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin: 10px 0;
+        }
+        .buttons button {
+            padding: 10px;
+            background-color: #001f54;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .buttons button:hover {
+            background-color: #003377;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Наши Футболки</h1>
+    <div class="container" id="product-container">
+        <!-- Здесь будут карточки продуктов -->
+    </div>
+
+    <!-- Modal -->
+    <div id="previewModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="Футболка" style="width: 100%; max-width: 300px;"/>
+            <h3 id="modalTitle"></h3>
+            <p id="modalPrice"></p>
+            <p id="modalDescription"></p>
+        </div>
+    </div>
+
+    <script src="shirts.js"></script>
+    <script>
+        function generateProducts(products) {
+            const container = document.getElementById('product-container');
+            const modal = document.getElementById('previewModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalPrice = document.getElementById('modalPrice');
+            const modalDescription = document.getElementById('modalDescription');
+            const closeModal = document.getElementsByClassName('close')[0];
+
+            container.innerHTML = '';
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'card';
+
+                const img = document.createElement('img');
+                const defaultColor = Object.keys(product.colors)[0];
+                img.src = product.colors[defaultColor]?.front || product.default.front;
+                img.alt = product.name || 'Футболка';
+
+                const cardContent = document.createElement('div');
+                cardContent.className = 'card-content';
+
+                const title = document.createElement('h3');
+                title.textContent = product.name || 'Без названия';
+
+                const price = document.createElement('p');
+                price.textContent = product.price || 'Цена не указана';
+
+                const colors = document.createElement('p');
+                colors.textContent = `Доступно в ${Object.keys(product.colors).length} цветах`;
+
+                const buttons = document.createElement('div');
+                buttons.className = 'buttons';
+
+                const quickViewButton = document.createElement('button');
+                quickViewButton.textContent = 'Быстрый просмотр';
+                quickViewButton.onclick = () => {
+                    modalImage.src = product.colors[defaultColor]?.front || product.default.front;
+                    modalTitle.textContent = product.name || 'Без названия';
+                    modalPrice.textContent = product.price || 'Цена не указана';
+                    modalDescription.textContent = product.description || 'Нет описания';
+                    modal.style.display = 'block';
+                };
+
+                const seePageButton = document.createElement('button');
+                seePageButton.textContent = 'Посмотреть';
+                seePageButton.onclick = () => alert(`Полная информация: ${product.name}`);
+
+                buttons.appendChild(quickViewButton);
+                buttons.appendChild(seePageButton);
+
+                cardContent.appendChild(title);
+                cardContent.appendChild(price);
+                cardContent.appendChild(colors);
+                cardContent.appendChild(buttons);
+
+                card.appendChild(img);
+                card.appendChild(cardContent);
+
+                container.appendChild(card);
+            });
+
+            closeModal.onclick = function() {
+                modal.style.display = "none";
+            };
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+        }
+
+        // Вызов функции с данными из файла
+        document.addEventListener('DOMContentLoaded', () => {
+            generateProducts(shirts);
+        });
+    </script>
+</body>
+</html>
