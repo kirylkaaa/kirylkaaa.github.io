@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Детали Футболки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        .product-details {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .product-details img {
+            width: 100%;
+            max-width: 300px;
+        }
+        .color-buttons, .side-buttons {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="product-details">
+    <h2 id="productName"></h2>
+    <img id="productImage" src="" alt="Футболка">
+    <p id="productPrice"></p>
+    <p id="productDescription"></p>
+
+    <div class="side-buttons">
+        <button onclick="showSide('front')">Перед</button>
+        <button onclick="showSide('back')">Назад</button>
+    </div>
+
+    <div class="color-buttons" id="colorButtons"></div>
+</div>
+
+<script>
+    const product = JSON.parse(localStorage.getItem('selectedProduct'));
+
+    if (product) {
+        const defaultColor = Object.keys(product.colors)[0];
+        document.getElementById('productName').textContent = product.name;
+        document.getElementById('productImage').src = product.colors[defaultColor]?.front || product.default.front;
+        document.getElementById('productPrice').textContent = product.price;
+        document.getElementById('productDescription').textContent = product.description;
+
+        const colorButtons = document.getElementById('colorButtons');
+        for (const color in product.colors) {
+            const button = document.createElement('button');
+            button.style.backgroundColor = color;
+            button.textContent = color;
+            button.onclick = () => {
+                showColor(color);
+            };
+            colorButtons.appendChild(button);
+        }
+    }
+
+    function showSide(side) {
+        const color = document.querySelector('.color-buttons button.active')?.textContent || Object.keys(product.colors)[0];
+        document.getElementById('productImage').src = product.colors[color][side];
+    }
+
+    function showColor(color) {
+        document.querySelectorAll('.color-buttons button').forEach(btn => btn.classList.remove('active'));
+        const selectedButton = Array.from(document.querySelectorAll('.color-buttons button')).find(btn => btn.textContent === color);
+        selectedButton.classList.add('active');
+
+        document.getElementById('productImage').src = product.colors[color].front;
+    }
+</script>
+
+</body>
+</html>
