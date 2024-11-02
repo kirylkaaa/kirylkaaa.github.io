@@ -150,6 +150,11 @@
                 quickViewButton.textContent = 'Быстрый просмотр';
                 quickViewButton.onclick = () => {
                     // Логика открытия модального окна
+                    modalImage.src = product.colors[defaultColor]?.front || product.default.front;
+                    modalTitle.textContent = product.name || 'Без названия';
+                    modalPrice.textContent = product.price || 'Цена не указана';
+                    modalDescription.textContent = product.description || 'Нет описания';
+                    modal.style.display = 'block';
                 };
     
                 const seePageButton = document.createElement('button');
