@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Графический редактор</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+        .toolbar {
+            width: 150px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-right: 1px solid #ddd;
+            box-sizing: border-box;
+            height: 100vh;
+        }
+        .drawing-area {
+            flex-grow: 1;
+            position: relative;
+            background: #fff;
+            cursor: crosshair;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <label for="shape-selector">Выберите фигуру:</label>
+        <select id="shape-selector">
+            <option value="circle">Круг</option>
+            <option value="rectangle">Прямоугольник</option>
+        </select>
+    </div>
+    <div class="drawing-area" id="drawing-area"></div>
+
+    <script>
+        const drawingArea = document.getElementById('drawing-area');
+        const shapeSelector = document.getElementById('shape-selector');
+        let startX, startY, currentShape, shapeType;
+
+        shapeSelector.addEventListener('change', () => {
+            shapeType = shapeSelector.value;
+        });
+
+        drawingArea.addEventListener('mousedown', (event) => {
+            const { offsetX, offsetY } = event;
+            startX = offsetX;
+            startY = offsetY;
+            shapeType = shapeSelector.value;
+
+            const svg = document.querySelector('.drawing-area svg') || createSvg();
+            if (!svg.parentNode) drawingArea.appendChild(svg);
+
+            if (shapeType === 'circle') {
+                currentShape = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                currentShape.setAttribute('cx', startX);
+                currentShape.setAttribute('cy', startY);
+                currentShape.setAttribute('r', 0);
+            } else if (shapeType === 'rectangle') {
+                currentShape = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                currentShape.setAttribute('x', startX);
+                currentShape.setAttribute('y', startY);
+                currentShape.setAttribute('width', 0);
+                currentShape.setAttribute('height', 0);
+            }
+
+            currentShape.setAttribute('fill', 'transparent');
+            currentShape.setAttribute('stroke', 'black');
+            currentShape.setAttribute('stroke-width', 2);
+            svg.appendChild(currentShape);
+        });
+
+        drawingArea.addEventListener('mousemove', (event) => {
+            if (!currentShape) return;
+
+            const { offsetX, offsetY } = event;
+            const dx = offsetX - startX;
+            const dy = offsetY - startY;
+
+            if (shapeType === 'circle') {
+                const radius = Math.sqrt(dx * dx + dy * dy);
+                currentShape.setAttribute('r', radius);
+            } else if (shapeType === 'rectangle') {
+                const width = Math.abs(dx);
+                const height = Math.abs(dy);
+                currentShape.setAttribute('x', Math.min(startX, offsetX));
+                currentShape.setAttribute('y', Math.min(startY, offsetY));
+                currentShape.setAttribute('width', width);
+                currentShape.setAttribute('height', height);
+            }
+        });
+
+        drawingArea.addEventListener('mouseup', () => {
+            currentShape = null;
+        });
+
+        function createSvg() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            return svg;
+        }
+    </script>
+</body>
+</html>
