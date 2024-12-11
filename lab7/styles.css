@@ -1,0 +1,33 @@
+body {
+    display: flex;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden;
+}
+
+.toolbar {
+    width: 150px;
+    padding: 10px;
+    background: #f0f0f0;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box;
+    height: 100vh;
+}
+
+.drawing-area {
+    flex-grow: 1;
+    position: relative;
+    background: #fff;
+    cursor: crosshair;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
